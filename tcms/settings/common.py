@@ -25,17 +25,21 @@ SECRET_KEY = '^8y!)$0t7yq2+65%&_#@i^_o)eb3^q--y_$e7a_=t$%$1i)zuv'
 # Database settings
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': os.environ.get('KIWI_DB_ENGINE', 'django.db.backends.mysql'),
         'NAME': os.environ.get('KIWI_DB_NAME', 'kiwi'),
         'USER': os.environ.get('KIWI_DB_USER', 'kiwi'),
         'PASSWORD': os.environ.get('KIWI_DB_PASSWORD', 'kiwi'),
         'HOST': os.environ.get('KIWI_DB_HOST', ''),
         'PORT': os.environ.get('KIWI_DB_PORT', ''),
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'OPTIONS': {},
     },
 }
+
+# handle MariaDB only options
+if DATABASES['default']['ENGINE'].find('mysql') > -1:
+    DATABASES['default']['OPTIONS'].update({
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        })
 
 
 # Administrators error report email settings
@@ -225,13 +229,8 @@ STATICFILES_DIRS = [
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(TCMS_ROOT_PATH, 'static').replace('\\', '/'),
+    os.path.join(TCMS_ROOT_PATH, 'node_modules').replace('\\', '/'),
 ]
-
-# this is the path used inside the Docker image
-if os.path.exists('/Kiwi/node_modules'):
-    STATICFILES_DIRS.append('/Kiwi/node_modules')
-else:
-    STATICFILES_DIRS.append(os.path.join(TCMS_ROOT_PATH, '..', 'node_modules').replace('\\', '/'))
 
 # List of finder classes that know how to find static files in
 # various locations.

@@ -26,7 +26,7 @@ class TestGetCaseRunsStatsByStatusFromEmptyTestRun(BasePlanCase):
         cls.statuss = TestExecutionStatus.objects.all().order_by('pk')
 
     def test_get_from_empty_case_runs(self):
-        data = self.empty_test_run.stats_caseruns_status(self.statuss)
+        data = self.empty_test_run.stats_executions_status(self.statuss)
 
         subtotal = dict((status.pk, [0, status])
                         for status in self.statuss)
@@ -62,7 +62,7 @@ class TestGetCaseRunsStatsByStatus(BasePlanCase):
                                  run=cls.test_run, case=case, status=status)
 
     def test_get_stats(self):
-        data = self.test_run.stats_caseruns_status(self.statuss)
+        data = self.test_run.stats_executions_status(self.statuss)
 
         subtotal = dict((status.pk, [0, status])
                         for status in self.statuss)
@@ -133,12 +133,12 @@ class TestGetCaseRunsBugs(BaseCaseRun):
 
     def test_empty_if_no_bugs(self):
         data = TestExecutionDataMixin()
-        result = data.get_case_runs_bugs(self.test_run_1.pk)
+        result = data.get_execution_bugs(self.test_run_1.pk)
         self.assertEqual({}, result)
 
     def test_get_bugs(self):
         data = TestExecutionDataMixin()
-        result = data.get_case_runs_bugs(self.test_run.pk)
+        result = data.get_execution_bugs(self.test_run.pk)
         expected_result = {
             self.execution_1.pk: [
                 {
@@ -202,12 +202,12 @@ class TestGetCaseRunsComments(BaseCaseRun):
 
     def test_get_empty_comments_if_no_comment_there(self):
         data = TestExecutionDataMixin()
-        comments = data.get_case_runs_comments(self.test_run.pk)
+        comments = data.get_execution_comments(self.test_run.pk)
         self.assertEqual({}, comments)
 
     def test_get_comments(self):
         data = TestExecutionDataMixin()
-        comments = data.get_case_runs_comments(self.test_run_1.pk)
+        comments = data.get_execution_comments(self.test_run_1.pk)
 
         # note: keys are integer but the values are all string
         expected_comments = {
